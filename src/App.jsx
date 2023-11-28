@@ -1,11 +1,68 @@
-import React from 'react';
+import React, { useState } from 'react';
+import classnames from 'classnames';
 import './App.scss';
 
-// import usersFromServer from './api/users';
-// import photosFromServer from './api/photos';
-// import albumsFromServer from './api/albums';
+import usersFromServer from './api/users';
+import photosFromServer from './api/photos';
+import albumsFromServer from './api/albums';
 
-export const App: React.FC = () => {
+function mapPhotosWithAlbum(photos, albums) {
+  function getAlbum(albumId) {
+    return albums.find(album => album.id === albumId) || null;
+  }
+
+  return photos.map(photo => ({
+    ...photo,
+    album: getAlbum(photo.albumId),
+  }));
+}
+
+function mapPhotosWithDetails(photos, users) {
+  function getUserById(userId) {
+    return users.find(user => user.id === userId) || null;
+  }
+
+  return photos.map(photo => ({
+    ...photo,
+    user: getUserById(photo.userId),
+  }));
+}
+
+const photosWithAlbum = mapPhotosWithAlbum(photosFromServer, albumsFromServer);
+export const photos = mapPhotosWithDetails(photosWithAlbum, usersFromServer);
+
+const genderColorClass = (sex) => {
+  return sex === 'm' ? 'has-text-link' : 'has-text-danger';
+};
+
+export const App = () => {
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [searchValue, setSearchValue] = useState('');
+
+  const handleUserClick = (userId) => {
+    setSelectedUser(userId);
+  };
+
+  const inputChange = (event) => {
+    setSearchValue(event.target.value);
+  };
+
+  const inputClear = () => {
+    setSearchValue('');
+  };
+
+  const resetFilters = () => {
+    setSelectedUser(null);
+    setSearchValue('');
+  };
+
+  const filteredPhotos = photos.filter(photo =>
+    (!selectedUser || photo.userId === selectedUser) &&
+    (!searchValue || photo.title.toLowerCase().includes(searchValue.toLowerCase()))
+  );
+
+
+
   return (
     <div className="section">
       <div className="container">
@@ -16,30 +73,20 @@ export const App: React.FC = () => {
             <p className="panel-heading">Filters</p>
 
             <p className="panel-tabs has-text-weight-bold">
-              <a
-                href="#/"
-              >
+              <a href="#/" onClick={() => handleUserClick(null)}>
                 All
               </a>
 
-              <a
-                href="#/"
-              >
-                User 1
-              </a>
-
-              <a
-                href="#/"
-                className="is-active"
-              >
-                User 2
-              </a>
-
-              <a
-                href="#/"
-              >
-                User 3
-              </a>
+              {usersFromServer.map(user => (
+                <a
+                  key={user.id}
+                  href="#/"
+                  onClick={() => handleUserClick(user.id)}
+                  className={classnames({ 'is-active': selectedUser === user.id })}
+                >
+                  {`User ${user.id}`}
+                </a>
+              ))}
             </p>
 
             <div className="panel-block">
@@ -48,20 +95,19 @@ export const App: React.FC = () => {
                   type="text"
                   className="input"
                   placeholder="Search"
-                  value="qwe"
+                  value={searchValue}
+                  onChange={inputChange}
                 />
 
                 <span className="icon is-left">
                   <i className="fas fa-search" aria-hidden="true" />
                 </span>
 
-                <span className="icon is-right">
-                  {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-                  <button
-                    type="button"
-                    className="delete"
-                  />
-                </span>
+                {searchValue && (
+                  <span className="icon is-right" onClick={inputClear}>
+                    <i className="fas fa-times-circle" />
+                  </span>
+                )}
               </p>
             </div>
 
@@ -180,19 +226,19 @@ export const App: React.FC = () => {
             </thead>
 
             <tbody>
-              <tr>
-                <td className="has-text-weight-bold">
-                  1
-                </td>
+            {filteredPhotos.map(photo => (
+                <tr key={photo.id}>
+                  <td className="has-text-weight-bold">{photo.id}</td>
+                  <td>{photo.title}</td>
+                  <td>{photo.album ? photo.album.name : 'None'}</td>
+                  <td className={classnames(genderColorClass(photo.user ? photo.user.sex : ''))}>
+                    {photo.user ? photo.user.name : 'None'}
+                  </td>
+                </tr>
+              ))}
 
-                <td>accusamus beatae ad facilis cum similique qui sunt</td>
-                <td>quidem molestiae enim</td>
-
-                <td className="has-text-link">
-                  Max
-                </td>
-              </tr>
             </tbody>
+
           </table>
         </div>
       </div>
