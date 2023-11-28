@@ -65,23 +65,8 @@ export const App = () => {
     setSelectedUser(null);
   };
 
-  let filteredGoodsList = filteredGoods(uniteGoods,
+  const filteredGoodsList = filteredGoods(uniteGoods,
     { inputQuery, selectedAlbum, selectedUser });
-
-  const moveUp = (good) => {
-    const index = filteredGoodsList.indexOf(good);
-
-    if (index > 1) {
-      return;
-    }
-
-    filteredGoodsList = [
-      ...filteredGoodsList.slice(0, index - 1),
-      filteredGoodsList[index],
-      filteredGoodsList[index - 1],
-      filteredGoodsList.slice(index + 1),
-    ];
-  };
 
   return (
     <div className="section">
@@ -179,7 +164,6 @@ export const App = () => {
 
         <PhotoTable
           filteredGoodsList={filteredGoodsList}
-          moveUp={moveUp}
         />
       </div>
     </div>

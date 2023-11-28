@@ -1,6 +1,24 @@
+// import { useState } from 'react';
 import cn from 'classnames';
 
-export const PhotoTable = ({ filteredGoodsList, moveUp }) => {
+export const PhotoTable = ({ filteredGoodsList }) => {
+  // const [goods, setGoods] = useState(filteredGoodsList);
+
+  // const moveUp = (good) => {
+  //   const index = filteredGoodsList.indexOf(good);
+
+  //   if (index > 1) {
+  //     return;
+  //   }
+
+  //   setGoods([
+  //     ...goods.slice(0, index - 1),
+  //     goods[index],
+  //     goods[index - 1],
+  //     goods.slice(index + 1),
+  //   ]);
+  // };
+
   return (
     <div className="box table-container">
       <table
@@ -66,7 +84,7 @@ export const PhotoTable = ({ filteredGoodsList, moveUp }) => {
               </td>
 
               <td>{photo.title}</td>
-              <td>{photo.album.title}</td>
+              <td>{photo.album.title.slice(0, 25)}</td>
 
               <td className={cn({
                 'has-text-link': photo.owner.sex === 'm',
@@ -76,12 +94,12 @@ export const PhotoTable = ({ filteredGoodsList, moveUp }) => {
                 {photo.owner.name}
               </td>
               {// eslint-disable-next-line react/button-has-type
-                <button onClick={moveUp(photo)}>
+                <button>
                   ↑
                 </button>
               }
               {// eslint-disable-next-line react/button-has-type
-                <button onClick={moveUp(photo)}>
+                <button>
                   ↓
                 </button>
               }
@@ -89,12 +107,7 @@ export const PhotoTable = ({ filteredGoodsList, moveUp }) => {
             </tr>
 
           ))}
-          {/* {filteredGoodsList.length !== 0 && (
-            // eslint-disable-next-line react/button-has-type
-            <button onClick={moveUp}>
-              moveUp
-            </button>
-          )} */}
+
           {filteredGoodsList.length === 0 && (
             <p data-cy="NoMatchingMessage">
               No photos matching selected criteria
