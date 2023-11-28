@@ -1,6 +1,8 @@
+/* eslint-disable prefer-template */
 /* eslint-disable @typescript-eslint/quotes */
 /* eslint-disable react/jsx-filename-extension */
 import React, { useState } from 'react';
+import classNames from 'classnames';
 import './App.scss';
 
 import usersFromServer from './api/users';
@@ -22,7 +24,7 @@ const completedPhotos = photosFromServer.map(photo => ({
   user: getUserById(getAlbumById(photo.albumId).userId),
 }));
 
-function getPhotosFiltered(inputPhotos, selectedUser, query) {
+function getPhotosFiltered(inputPhotos, selectedUser, query, albums) {
   let filteredPhotos = [...inputPhotos];
 
   if (selectedUser) {
@@ -37,12 +39,19 @@ function getPhotosFiltered(inputPhotos, selectedUser, query) {
     );
   }
 
+  if (albums.length > 0) {
+    filteredPhotos = filteredPhotos.filter(
+      photo => albums.includes(photo.album.id),
+    );
+  }
+
   return filteredPhotos;
 }
 
 export const App = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [query, setQuery] = useState('');
+  const [selectedAlbums, setSelectedAlbums] = useState([]);
 
   const prepareQuery = (inputQuery) => {
     const pureQuery = inputQuery.trim().toLowerCase();
@@ -50,15 +59,28 @@ export const App = () => {
     setQuery(pureQuery);
   };
 
+  const resetQuery = () => setQuery("");
+
   const handleUserSelect = user => setSelectedUser(user);
   const resetUserSelect = () => setSelectedUser(null);
 
-  const resetQuery = () => setQuery("");
+  const handleSelectedAlbum = (albumId) => {
+    setSelectedAlbums(prevAlbums => {
+      if (prevAlbums.includes(albumId)) {
+        return prevAlbums.filter(id => id !== albumId);
+      }
+
+      return [...prevAlbums, albumId];
+    });
+  };
+
+  const resetAlbumsSelect = () => setSelectedAlbums([]);
 
   const preparedPhotos = getPhotosFiltered(
     completedPhotos,
     selectedUser,
     query,
+    selectedAlbums,
   );
 
   return (
@@ -81,6 +103,7 @@ export const App = () => {
               {usersFromServer.map(user => (
                 <a
                   href="#/"
+                  className={classNames({ 'is-active': selectedUser === user })}
                   onClick={() => handleUserSelect(user)}
                   key={user.id}
                 >
@@ -119,21 +142,36 @@ export const App = () => {
             <div className="panel-block is-flex-wrap-wrap">
               <a
                 href="#/"
-                className="button is-success mr-6 is-outlined"
+                onClick={() => resetAlbumsSelect()}
+                className={classNames('button is-success mr-6', {
+                  'is-outlined': selectedAlbums.length !== 0,
+                })}
               >
                 All
               </a>
 
-              {albumsFromServer.map(
-                album => (
-                  <a
-                    className="button mr-2 my-1 is-info"
-                    href="#/"
-                  >
-                    {album.id}
-                  </a>
-                ),
-              )}
+              {albumsFromServer.map(album => (
+                <a
+                  className={classNames('button mr-2 my-1 album-button', {
+                    'is-info': selectedAlbums.includes(album.id),
+                  })}
+                  href="#/"
+                  key={album.id}
+                  onClick={() => handleSelectedAlbum(album.id)}
+                  style={{
+                    maxWidth: '200px',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}
+                >
+                  {
+                    album.title.length > 25
+                      ? `${album.title.substring(0, 25)} ...`
+                      : album.title
+                  }
+                </a>
+              ))}
+
             </div>
 
             <div className="panel-block">
@@ -143,6 +181,7 @@ export const App = () => {
                 onClick={() => {
                   resetQuery();
                   resetUserSelect();
+                  resetAlbumsSelect();
                 }}
               >
                 Reset all filters

@@ -14,13 +14,13 @@ Implement as much options below as you can:
     - The `x` button should appear only when the value is not empty;
     - Clear the value after the `x` button click.
 1. Show `No results` message if there are no photos matching current criteria
-    - `Reset All Filters` button should clear all the filters. -->
-1. (*) Allow to select several albums:
+    <!-- - `Reset All Filters` button should clear all the filters. -->
+<!-- 1. (*) Allow to select several albums:
     - Add `is-info` class to selected categories;
     - You should truncate text of the album name (with CSS or JS)
     - Show only photos of selected categories;
     - `All` button should clear the selection;
-    - Remove `is-outlined` class from the `All` button if no categories are selected.
+    - Remove `is-outlined` class from the `All` button if no categories are selected. --> 
 1. (*) Implement photo reordering.
     - add the last column with &darr; and &uarr; buttons
     - with moveUp button, move the item of the list to the one up position (if it's the first element - do nothing)
