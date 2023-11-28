@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import cn from 'classnames';
 import './App.scss';
+import { ResetFilters } from './components/ResetFilters/ResetFilters';
+import { UserFilter } from './components/UserFilter/UserFilter';
 
 import usersFromServer from './api/users';
 import photosFromServer from './api/photos';
@@ -24,15 +26,15 @@ const mappedPhotos = photosFromServer.map((photo) => {
 });
 
 export const App = () => {
-  const [owner, setOwner] = useState(null);
+  const [selectedOwner, setSelectedOwner] = useState(0);
   const [searchField, setSearchField] = useState('');
   const [selectedAlbums, setSelectedAlbums] = useState([]);
   const [selectedSortingMethod, setSelectedSortingMethod] = useState('');
   const [sortBy, setSortBy] = useState('');
 
   const filteredPhotos = mappedPhotos.filter((photo) => {
-    const isOwnerMatched = owner === null
-    || (photo.user && photo.user.id === owner.id);
+    const isOwnerMatched = selectedOwner === 0
+    || (photo.user.id === selectedOwner);
 
     const isPhotoMatched = searchField === ''
     || photo.title.toLowerCase().includes(searchField.toLowerCase());
@@ -75,6 +77,8 @@ export const App = () => {
       return res;
     });
   }
+
+  const handleChangingOwnerFilter = id => setSelectedOwner(id);
 
   const inputSearchHandler = (event) => {
     setSearchField(event.target.value);
@@ -138,7 +142,7 @@ export const App = () => {
 
   const resetAllFilters = () => {
     setSearchField('');
-    setOwner(null);
+    setSelectedOwner(0);
     setSelectedAlbums([]);
     setSelectedSortingMethod('');
     setSortBy('');
@@ -155,34 +159,11 @@ export const App = () => {
           <nav className="panel">
             <p className="panel-heading">Filters</p>
 
-            <p className="panel-tabs has-text-weight-bold">
-              <a
-                href="#/"
-                className={cn({
-                  'is-active': !owner,
-                })}
-                onClick={() => setOwner(null)}
-              >
-                All
-              </a>
-              {
-                usersFromServer.map(user => (
-                  <a
-                    data-cy="FilterUser"
-                    href="#/"
-                    key={user.id}
-                    className={cn({
-                      'is-active': user.id === owner?.id,
-                    })}
-                    onClick={() => {
-                      setOwner(user);
-                    }}
-                  >
-                    {user.name}
-                  </a>
-                ))
-              }
-            </p>
+            <UserFilter
+              selectedOwner={selectedOwner}
+              handleChangingOwnerFilter={handleChangingOwnerFilter}
+              usersFromServer={usersFromServer}
+            />
 
             <div className="panel-block">
               <p className="control has-icons-left has-icons-right">
@@ -242,15 +223,7 @@ export const App = () => {
               }
             </div>
 
-            <div className="panel-block">
-              <a
-                href="#/"
-                className="button is-link is-outlined is-fullwidth"
-                onClick={resetAllFilters}
-              >
-                Reset all filters
-              </a>
-            </div>
+            <ResetFilters resetAllFilters = {resetAllFilters} />
           </nav>
         </div>
 
