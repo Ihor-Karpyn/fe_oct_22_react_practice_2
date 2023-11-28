@@ -4,6 +4,7 @@ import './App.scss';
 import usersFromServer from './api/users';
 import photosFromServer from './api/photos';
 import albumsFromServer from './api/albums';
+import { PhotoTable } from './components/PhotoTable';
 
 const uniteGoods = photosFromServer.map(photo => {
   const albums = albumsFromServer.find(album => album.id === photo.albumId);
@@ -161,89 +162,7 @@ export const App = () => {
           </nav>
         </div>
 
-        <div className="box table-container">
-          <table
-            className="table is-striped is-narrow is-fullwidth"
-          >
-            <thead>
-              <tr>
-                <th>
-                  <span className="is-flex is-flex-wrap-nowrap">
-                    ID
-
-                    <a href="#/">
-                      <span className="icon">
-                        <i data-cy="SortIcon" className="fas fa-sort" />
-                      </span>
-                    </a>
-                  </span>
-                </th>
-
-                <th>
-                  <span className="is-flex is-flex-wrap-nowrap">
-                    Photo name
-
-                    <a href="#/">
-                      <span className="icon">
-                        <i className="fas fa-sort-down" />
-                      </span>
-                    </a>
-                  </span>
-                </th>
-
-                <th>
-                  <span className="is-flex is-flex-wrap-nowrap">
-                    Album name
-
-                    <a href="#/">
-                      <span className="icon">
-                        <i className="fas fa-sort-up" />
-                      </span>
-                    </a>
-                  </span>
-                </th>
-
-                <th>
-                  <span className="is-flex is-flex-wrap-nowrap">
-                    User name
-
-                    <a href="#/">
-                      <span className="icon">
-                        <i className="fas fa-sort" />
-                      </span>
-                    </a>
-                  </span>
-                </th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {filteredGoodsList.map(photo => (
-                <tr key={photo.id}>
-                  <td className="has-text-weight-bold">
-                    {photo.id}
-                  </td>
-
-                  <td>{photo.title}</td>
-                  <td>{photo.album.title}</td>
-
-                  <td className={cn({
-                    'has-text-link': photo.owner.sex === 'm',
-                    'has-text-danger': photo.owner.sex === 'f',
-                  })}
-                  >
-                    {photo.owner.name}
-                  </td>
-                </tr>
-              ))}
-              {filteredGoodsList.length === 0 && (
-                <p data-cy="NoMatchingMessage">
-                  No photos matching selected criteria
-                </p>
-              )}
-            </tbody>
-          </table>
-        </div>
+        <PhotoTable filteredGoodsList={filteredGoodsList} />
       </div>
     </div>
   );
