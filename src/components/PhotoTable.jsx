@@ -1,6 +1,6 @@
 import cn from 'classnames';
 
-export const PhotoTable = ({ filteredGoodsList }) => {
+export const PhotoTable = ({ filteredGoodsList, moveUp }) => {
   return (
     <div className="box table-container">
       <table
@@ -75,8 +75,26 @@ export const PhotoTable = ({ filteredGoodsList }) => {
               >
                 {photo.owner.name}
               </td>
+              {// eslint-disable-next-line react/button-has-type
+                <button onClick={moveUp(photo)}>
+                  ↑
+                </button>
+              }
+              {// eslint-disable-next-line react/button-has-type
+                <button onClick={moveUp(photo)}>
+                  ↓
+                </button>
+              }
+
             </tr>
+
           ))}
+          {/* {filteredGoodsList.length !== 0 && (
+            // eslint-disable-next-line react/button-has-type
+            <button onClick={moveUp}>
+              moveUp
+            </button>
+          )} */}
           {filteredGoodsList.length === 0 && (
             <p data-cy="NoMatchingMessage">
               No photos matching selected criteria
