@@ -127,7 +127,9 @@ export const App = () => {
             <div className="panel-block is-flex-wrap-wrap">
               <a
                 href="#/"
-                className="button is-success mr-6 is-outlined"
+                className={cn('button is-success mr-6', {
+                  'is-outlined': selectedAlbum.length !== 0,
+                })}
                 onClick={() => setSelectedAlbum([])}
               >
                 All
