@@ -5,7 +5,7 @@ Implement as much options below as you can:
 <!--
 1. Render photos in a table with id, title, album title and an user name.
     - owner names should be colored with `has-text-link` for men and `has-text-danger` for women. -->
-1. Implement ability to filter photos by an owner:
+<!-- 1. Implement ability to filter photos by an owner:
     - If a user is selected it should be highlighter with `is-active` class;
     - Show only photos of a selected user;
     - Select `All` to see all the photos.
@@ -14,7 +14,7 @@ Implement as much options below as you can:
     - The `x` button should appear only when the value is not empty;
     - Clear the value after the `x` button click.
 1. Show `No results` message if there are no photos matching current criteria
-    - `Reset All Filters` button should clear all the filters.
+    - `Reset All Filters` button should clear all the filters. -->
 1. (*) Allow to select several albums:
     - Add `is-info` class to selected categories;
     - You should truncate text of the album name (with CSS or JS)

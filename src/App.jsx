@@ -1,24 +1,25 @@
+/* eslint-disable @typescript-eslint/quotes */
 /* eslint-disable react/jsx-filename-extension */
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import './App.scss';
 
 import usersFromServer from './api/users';
 import photosFromServer from './api/photos';
 import albumsFromServer from './api/albums';
 
-function getAlbum(albumId) {
+function getAlbumById(albumId) {
   return albumsFromServer.find(album => album.id === albumId);
 }
 
-function getUser(userId) {
+function getUserById(userId) {
   return usersFromServer.find(user => user.id === userId);
 }
 
 const completedPhotos = photosFromServer.map(photo => ({
-  album: getAlbum(photo.albumId),
+  album: getAlbumById(photo.albumId),
   title: photo.title,
   id: photo.id,
-  user: getUser(getAlbum(photo.albumId).userId),
+  user: getUserById(getAlbumById(photo.albumId).userId),
 }));
 
 function getPhotosFiltered(inputPhotos, selectedUser, query) {
@@ -26,13 +27,13 @@ function getPhotosFiltered(inputPhotos, selectedUser, query) {
 
   if (selectedUser) {
     filteredPhotos = filteredPhotos.filter(
-      product => product.user.name === selectedUser.name,
+      photo => photo.user.name === selectedUser.name,
     );
   }
 
   if (query) {
     filteredPhotos = filteredPhotos.filter(
-      product => product.name.toLowerCase().includes(query),
+      photo => photo.title.toLowerCase().includes(query),
     );
   }
 
@@ -40,10 +41,24 @@ function getPhotosFiltered(inputPhotos, selectedUser, query) {
 }
 
 export const App = () => {
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [query, setQuery] = useState('');
+
+  const prepareQuery = (inputQuery) => {
+    const pureQuery = inputQuery.trim().toLowerCase();
+
+    setQuery(pureQuery);
+  };
+
+  const handleUserSelect = user => setSelectedUser(user);
+  const resetUserSelect = () => setSelectedUser(null);
+
+  const resetQuery = () => setQuery("");
+
   const preparedPhotos = getPhotosFiltered(
     completedPhotos,
-    // selectedUser,
-    // query,
+    selectedUser,
+    query,
   );
 
   return (
@@ -58,28 +73,20 @@ export const App = () => {
             <p className="panel-tabs has-text-weight-bold">
               <a
                 href="#/"
+                onClick={() => resetUserSelect()}
               >
                 All
               </a>
 
-              <a
-                href="#/"
-              >
-                User 1
-              </a>
-
-              <a
-                href="#/"
-                className="is-active"
-              >
-                User 2
-              </a>
-
-              <a
-                href="#/"
-              >
-                User 3
-              </a>
+              {usersFromServer.map(user => (
+                <a
+                  href="#/"
+                  onClick={() => handleUserSelect(user)}
+                  key={user.id}
+                >
+                  {user.name}
+                </a>
+              ))}
             </p>
 
             <div className="panel-block">
@@ -88,20 +95,24 @@ export const App = () => {
                   type="text"
                   className="input"
                   placeholder="Search"
-                  value="qwe"
+                  value={query}
+                  onChange={event => prepareQuery(event.target.value)}
                 />
 
                 <span className="icon is-left">
                   <i className="fas fa-search" aria-hidden="true" />
                 </span>
 
-                <span className="icon is-right">
-                  {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-                  <button
-                    type="button"
-                    className="delete"
-                  />
-                </span>
+                {query && (
+                  <span className="icon is-right">
+                    {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
+                    <button
+                      type="button"
+                      className="delete"
+                      onClick={() => resetQuery()}
+                    />
+                  </span>
+                )}
               </p>
             </div>
 
@@ -113,45 +124,26 @@ export const App = () => {
                 All
               </a>
 
-              <a
-                className="button mr-2 my-1 is-info"
-                href="#/"
-              >
-                Album 1
-              </a>
-
-              <a
-                className="button mr-2 my-1"
-                href="#/"
-              >
-                Album 2
-              </a>
-
-              <a
-                className="button mr-2 my-1 is-info"
-                href="#/"
-              >
-                Album 3
-              </a>
-              <a
-                className="button mr-2 my-1"
-                href="#/"
-              >
-                Album 4
-              </a>
-              <a
-                className="button mr-2 my-1"
-                href="#/"
-              >
-                Album 5
-              </a>
+              {albumsFromServer.map(
+                album => (
+                  <a
+                    className="button mr-2 my-1 is-info"
+                    href="#/"
+                  >
+                    {album.id}
+                  </a>
+                ),
+              )}
             </div>
 
             <div className="panel-block">
               <a
                 href="#/"
                 className="button is-link is-outlined is-fullwidth"
-
+                onClick={() => {
+                  resetQuery();
+                  resetUserSelect();
+                }}
               >
                 Reset all filters
               </a>
